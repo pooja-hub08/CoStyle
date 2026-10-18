@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoStyle - Secure Payment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #fcf9f2; /* Creamy White Theme */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .payment-container {
+            background: white;
+            width: 750px;
+            display: flex;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(88, 28, 135, 0.15);
+            overflow: hidden;
+            border: 2px solid #f3e8ff;
+        }
+        .payment-sidebar {
+            background: #581c87; /* Rich Purple */
+            color: #fcf9f2;
+            width: 35%;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .payment-sidebar h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .amount-box {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .amount-box span {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .payment-form-section {
+            width: 65%;
+            padding: 40px;
+        }
+        .payment-form-section h3 {
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+        .method-icons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .icon-box {
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .icon-box.active {
+            border-color: #581c87;
+            background: #f3e8ff;
+            color: #581c87;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+            font-size: 14px;
+        }
+        .row-inputs {
+            display: flex;
+            gap: 15px;
+        }
+        .pay-btn {
+            width: 100%;
+            background: #581c87;
+            color: #fcf9f2;
+            border: none;
+            padding: 14px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.2s;
+        }
+        .pay-btn:hover {
+            background: #6b21a8;
+        }
+
+        /* Success Modal Popup Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(88, 28, 135, 0.2);
+            border: 2px solid #f3e8ff;
+        }
+        .modal-card h2 {
+            color: #581c87;
+            margin: 15px 0 10px;
+            font-size: 22px;
+        }
+        .modal-card p {
+            color: #4b5563;
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        .modal-card button {
+            background: #581c87;
+            color: #fcf9f2;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .modal-card button:hover {
+            background: #6b21a8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="payment-container">
+        <!-- Sidebar -->
+        <div class="payment-sidebar">
+            <div>
+                <h2>CoStyle</h2>
+                <p style="font-size: 14px; opacity: 0.8;">Secure Checkout</p>
+            </div>
+            <div class="amount-box">
+                ₹<span id="pay-total">0</span> <span style="font-size: 14px;">INR</span>
+            </div>
+            <div style="font-size: 12px; opacity: 0.7;">
+                Encrypted & Safe Payments
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="payment-form-section">
+            <h3>Select Payment Method</h3>
+            <div class="method-icons">
+                <div class="icon-box active">Card</div>
+                <div class="icon-box">UPI</div>
+                <div class="icon-box">COD</div>
+            </div>
+
+            <form onsubmit="processPayment(event)">
+                <div class="input-group">
+                    <label>CARD NUMBER</label>
+                    <input type="text" placeholder="4111 2222 3333 4444" required maxlength="19">
+                </div>
+                <div class="input-group">
+                    <label>CARDHOLDER NAME</label>
+                    <input type="text" placeholder="Pooja Sri" required>
+                </div>
+                <div class="row-inputs">
+                    <div class="input-group">
+                        <label>MM/YY</label>
+                        <input type="text" placeholder="MM/YY" required maxlength="5">
+                    </div>
+                    <div class="input-group">
+                        <label>CVV</label>
+                        <input type="password" placeholder="123" required maxlength="4">
+                    </div>
+                </div>
+                <button type="submit" class="pay-btn">Pay Now →</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Gorgeous Success Popup Modal -->
+    <div id="success-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div style="font-size: 55px;">🎉</div>
+            <h2>Payment Successful & Confirmed!</h2>
+            <p id="order-details-text">Order ID: <b>ORD123456</b><br>Amount Paid: ₹0</p>
+            <button onclick="goToHome()">Back to Store</button>
+        </div>
+    </div>
+
+    <script>
+        const totalAmount = localStorage.getItem("cartTotal") || "0";
+        document.getElementById("pay-total").innerText = totalAmount;
+
+        function processPayment(event) {
+            event.preventDefault();
+            const orderId = "ORD" + Date.now().toString().slice(-6);
+
+            // Show gorgeous modal instead of alert
+            const modal = document.getElementById("success-modal");
+            const detailsText = document.getElementById("order-details-text");
+            
+            if (modal && detailsText) {
+                detailsText.innerHTML = `Order ID: <b>${orderId}</b><br>Amount Paid: <b>₹${totalAmount}</b><br><br>Thank you for shopping with CoStyle! Your order has been successfully confirmed.`;
+                modal.style.display = "flex";
+            }
+        }
+
+        function goToHome() {
+            window.location.href = "shop.html";
+        }
+    </script>
+</body>
+</html>
